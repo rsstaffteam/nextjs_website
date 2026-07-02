@@ -25,9 +25,10 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "types": [
       "@shopify/oxygen-workers-types",
-      "react-router",
+ "react-router",
       "@shopify/hydrogen/react-router-types",
       "vite/client"
     ],
