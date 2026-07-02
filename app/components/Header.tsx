@@ -7,6 +7,7 @@ import {
 } from '@shopify/hydrogen';
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
+import {IconSearch, IconUser, IconCart} from '~/components/LandingIcons';
 
 interface HeaderProps {
   header: HeaderQuery;
@@ -15,102 +16,81 @@ interface HeaderProps {
   publicStoreDomain: string;
 }
 
-type Viewport = 'desktop' | 'mobile';
+/** Primary navigation — fixed to match the Sound Pro landing design. */
+const NAV_LINKS = [
+  {label: 'Home', to: '/', end: true},
+  {label: 'About', to: '/about', end: false},
+  {label: 'Reviews', to: '/reviews', end: false},
+  {label: 'Shop', to: '/collections', end: false},
+  {label: 'Contact', to: '/contact', end: false},
+];
 
-export function Header({
-  header,
-  isLoggedIn,
-  cart,
-  publicStoreDomain,
-}: HeaderProps) {
-  const {shop, menu} = header;
+export function Header({header, isLoggedIn, cart}: HeaderProps) {
+  const {shop} = header;
   return (
-    <header className="header">
-      <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
-        <strong>{shop.name}</strong>
-      </NavLink>
-      <HeaderMenu
-        menu={menu}
-        viewport="desktop"
-        primaryDomainUrl={header.shop.primaryDomain.url}
-        publicStoreDomain={publicStoreDomain}
-      />
-      <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
+    <header className="site-header">
+      <div className="site-header-inner">
+        <NavLink prefetch="intent" to="/" className="site-logo" end>
+          <span className="site-logo-mark" aria-hidden="true" />
+          <strong>{shop?.name || 'Sound Pro'}</strong>
+        </NavLink>
+
+        <nav className="site-nav" role="navigation">
+          {NAV_LINKS.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              prefetch="intent"
+              className="site-nav-link"
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+
+        <div className="site-header-ctas">
+          <SearchToggle />
+          <NavLink to="/account" prefetch="intent" className="site-icon-btn">
+            <IconUser />
+            <span className="sr-only">Account</span>
+          </NavLink>
+          <CartToggle cart={cart} />
+          <NavLink to="/account" className="site-signup">
+            <Suspense fallback="Sign Up">
+              <Await resolve={isLoggedIn} errorElement="Sign Up">
+                {(loggedIn) => (loggedIn ? 'Account' : 'Sign Up')}
+              </Await>
+            </Suspense>
+          </NavLink>
+          <HeaderMenuMobileToggle />
+        </div>
+      </div>
     </header>
   );
 }
 
-export function HeaderMenu({
-  menu,
-  primaryDomainUrl,
-  viewport,
-  publicStoreDomain,
-}: {
-  menu: HeaderProps['header']['menu'];
-  primaryDomainUrl: HeaderProps['header']['shop']['primaryDomain']['url'];
-  viewport: Viewport;
-  publicStoreDomain: HeaderProps['publicStoreDomain'];
-}) {
+/**
+ * Kept for the mobile menu Aside (PageLayout renders this in the drawer).
+ * Uses the same fixed nav links as the desktop bar.
+ */
+export function HeaderMenu({viewport}: {viewport: 'desktop' | 'mobile'}) {
   const className = `header-menu-${viewport}`;
   const {close} = useAside();
-
   return (
     <nav className={className} role="navigation">
-      {viewport === 'mobile' && (
+      {NAV_LINKS.map((item) => (
         <NavLink
-          end
+          key={item.to}
+          to={item.to}
+          end={item.end}
           onClick={close}
           prefetch="intent"
-          style={activeLinkStyle}
-          to="/"
+          className="header-menu-item"
         >
-          Home
+          {item.label}
         </NavLink>
-      )}
-      {(menu || FALLBACK_HEADER_MENU).items.map((item) => {
-        if (!item.url) return null;
-
-        // if the url is internal, we strip the domain
-        const url =
-          item.url.includes('myshopify.com') ||
-          item.url.includes(publicStoreDomain) ||
-          item.url.includes(primaryDomainUrl)
-            ? new URL(item.url).pathname
-            : item.url;
-        return (
-          <NavLink
-            className="header-menu-item"
-            end
-            key={item.id}
-            onClick={close}
-            prefetch="intent"
-            style={activeLinkStyle}
-            to={url}
-          >
-            {item.title}
-          </NavLink>
-        );
-      })}
-    </nav>
-  );
-}
-
-function HeaderCtas({
-  isLoggedIn,
-  cart,
-}: Pick<HeaderProps, 'isLoggedIn' | 'cart'>) {
-  return (
-    <nav className="header-ctas" role="navigation">
-      <HeaderMenuMobileToggle />
-      <NavLink prefetch="intent" to="/account" style={activeLinkStyle}>
-        <Suspense fallback="Sign in">
-          <Await resolve={isLoggedIn} errorElement="Sign in">
-            {(isLoggedIn) => (isLoggedIn ? 'Account' : 'Sign in')}
-          </Await>
-        </Suspense>
-      </NavLink>
-      <SearchToggle />
-      <CartToggle cart={cart} />
+      ))}
     </nav>
   );
 }
@@ -119,10 +99,11 @@ function HeaderMenuMobileToggle() {
   const {open} = useAside();
   return (
     <button
-      className="header-menu-mobile-toggle reset"
+      className="site-icon-btn site-menu-toggle"
       onClick={() => open('mobile')}
+      aria-label="Open menu"
     >
-      <h3>☰</h3>
+      <span>☰</span>
     </button>
   );
 }
@@ -130,8 +111,12 @@ function HeaderMenuMobileToggle() {
 function SearchToggle() {
   const {open} = useAside();
   return (
-    <button className="reset" onClick={() => open('search')}>
-      Search
+    <button
+      className="site-icon-btn"
+      onClick={() => open('search')}
+      aria-label="Search"
+    >
+      <IconSearch />
     </button>
   );
 }
@@ -142,6 +127,7 @@ function CartBadge({count}: {count: number | null}) {
 
   return (
     <a
+      className="site-icon-btn site-cart"
       href="/cart"
       onClick={(e) => {
         e.preventDefault();
@@ -153,8 +139,12 @@ function CartBadge({count}: {count: number | null}) {
           url: window.location.href || '',
         } as CartViewPayload);
       }}
+      aria-label="Open cart"
     >
-      Cart {count === null ? <span>&nbsp;</span> : count}
+      <IconCart />
+      {count !== null && count > 0 ? (
+        <span className="site-cart-badge">{count}</span>
+      ) : null}
     </a>
   );
 }
@@ -173,59 +163,4 @@ function CartBanner() {
   const originalCart = useAsyncValue() as CartApiQueryFragment | null;
   const cart = useOptimisticCart(originalCart);
   return <CartBadge count={cart?.totalQuantity ?? 0} />;
-}
-
-const FALLBACK_HEADER_MENU = {
-  id: 'gid://shopify/Menu/199655587896',
-  items: [
-    {
-      id: 'gid://shopify/MenuItem/461609500728',
-      resourceId: null,
-      tags: [],
-      title: 'Collections',
-      type: 'HTTP',
-      url: '/collections',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461609533496',
-      resourceId: null,
-      tags: [],
-      title: 'Blog',
-      type: 'HTTP',
-      url: '/blogs/journal',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461609566264',
-      resourceId: null,
-      tags: [],
-      title: 'Policies',
-      type: 'HTTP',
-      url: '/policies',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461609599032',
-      resourceId: 'gid://shopify/Page/92591030328',
-      tags: [],
-      title: 'About',
-      type: 'PAGE',
-      url: '/pages/about',
-      items: [],
-    },
-  ],
-};
-
-function activeLinkStyle({
-  isActive,
-  isPending,
-}: {
-  isActive: boolean;
-  isPending: boolean;
-}) {
-  return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'black',
-  };
 }

@@ -1,0 +1,1202 @@
+/*
+* ==================================================
+* Landing page — "Sound Pro" headphones
+* High-performance, animation-first design.
+* Only transform/opacity are animated (GPU friendly).
+* ==================================================
+*/
+
+.lp {
+  --lp-red: #e6362a;
+  --lp-red-2: #ff5b39;
+  --lp-orange: #ff7a45;
+  --lp-gold: #f4b740;
+  --lp-ink: #14110f;
+  --lp-ink-2: #1e1a17;
+  --lp-muted: #7c7671;
+  --lp-line: rgba(20, 17, 15, 0.08);
+  --lp-bg: #f6f5f3;
+  --lp-white: #ffffff;
+  --lp-grad: linear-gradient(120deg, var(--lp-red) 0%, var(--lp-red-2) 55%, var(--lp-orange) 100%);
+  --lp-grad-soft: linear-gradient(135deg, #ff6a3d 0%, #e6362a 100%);
+  --lp-shadow: 0 30px 60px -25px rgba(230, 54, 42, 0.45);
+  --lp-font: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  font-family: var(--lp-font);
+  color: var(--lp-ink);
+  background: var(--lp-bg);
+  overflow-x: clip;
+  line-height: 1.6;
+}
+
+.lp * {
+  box-sizing: border-box;
+}
+
+.lp img {
+  border-radius: 0;
+}
+
+.lp section {
+  position: relative;
+}
+
+.lp-wrap {
+  width: min(1200px, 92vw);
+  margin-inline: auto;
+}
+
+.lp-eyebrow {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--lp-red);
+  margin-bottom: 0.9rem;
+}
+
+.lp-eyebrow.on-dark {
+  color: #ffd9cf;
+}
+
+.lp-title {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  margin: 0 0 1rem;
+  text-transform: uppercase;
+}
+
+.lp-gradient-text {
+  background: var(--lp-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.lp-center {
+  text-align: center;
+}
+
+.lp-btn {
+  --btn-bg: var(--lp-grad);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.95rem 1.9rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--btn-bg);
+  color: #fff;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 14px 30px -10px rgba(230, 54, 42, 0.6);
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s;
+  will-change: transform;
+}
+
+.lp-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 22px 44px -12px rgba(230, 54, 42, 0.7);
+}
+
+.lp-btn:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+.lp-btn.ghost {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: none;
+  backdrop-filter: blur(6px);
+}
+
+.lp-btn.ghost:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.lp-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/*
+* --------------------------------------------------
+* Scroll reveal
+* --------------------------------------------------
+*/
+.reveal {
+  opacity: 0;
+  transform: translateY(34px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: transform, opacity;
+}
+
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/*
+* --------------------------------------------------
+* HERO
+* --------------------------------------------------
+*/
+.lp-hero {
+  position: relative;
+  min-height: 92vh;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  background:
+    radial-gradient(120% 120% at 80% -10%, #ff7a45 0%, transparent 45%),
+    radial-gradient(120% 120% at -10% 110%, #b3241b 0%, transparent 40%),
+    linear-gradient(135deg, #e6362a 0%, #c31d15 100%);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.lp-hero::after {
+  /* diagonal light band like the reference */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 58%, rgba(255, 255, 255, 0.06) 58.2%, rgba(255, 255, 255, 0.06) 63%, transparent 63.2%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* White diagonal wedge — the headphone sits across red & white, as in the ref */
+.lp-hero-cut {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(180deg, #ffffff 0%, #f6f5f3 100%);
+  clip-path: polygon(56% 100%, 100% 26%, 100% 100%);
+  box-shadow: -30px -30px 80px -30px rgba(0, 0, 0, 0.25) inset;
+  pointer-events: none;
+}
+
+.lp-hero-cut::before {
+  /* subtle highlight line along the diagonal edge */
+  content: '';
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(56% 100%, 100% 26%, 100% 28%, 57% 100%);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.lp-hero-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  align-items: center;
+  gap: 2rem;
+  padding: 7rem 0 5rem;
+  width: min(1200px, 92vw);
+  margin-inline: auto;
+}
+
+.lp-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+  margin-bottom: 1.6rem;
+}
+
+.lp-hero-badge .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #7dffb0;
+  box-shadow: 0 0 0 0 rgba(125, 255, 176, 0.7);
+  animation: lp-pulse 2s infinite;
+}
+
+.lp-hero h1 {
+  font-size: clamp(2.6rem, 6.4vw, 5rem);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  margin: 0 0 1.2rem;
+}
+
+.lp-hero h1 span {
+  display: block;
+  color: #ffe1b0;
+  background: linear-gradient(120deg, #fff 0%, #ffd7a1 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.lp-hero p {
+  max-width: 42ch;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 1.02rem;
+  margin: 0 0 2rem;
+}
+
+.lp-hero-cta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.lp-hero-stats {
+  display: flex;
+  gap: 2.4rem;
+  margin-top: 3rem;
+}
+
+.lp-hero-stats b {
+  display: block;
+  font-size: 1.7rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.lp-hero-stats small {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.lp-hero-visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.lp-hero-halo {
+  position: absolute;
+  width: 78%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.28) 0%, transparent 65%);
+  filter: blur(6px);
+  animation: lp-breathe 6s ease-in-out infinite;
+}
+
+.lp-hero-ring {
+  position: absolute;
+  width: 92%;
+  aspect-ratio: 1;
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  animation: lp-spin 26s linear infinite;
+}
+
+.lp-hero-ring::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border-radius: 50%;
+  background: var(--lp-gold);
+  box-shadow: 0 0 18px 4px rgba(244, 183, 64, 0.8);
+}
+
+.lp-hero-headphones {
+  position: relative;
+  width: min(520px, 78%);
+  height: auto;
+  filter: drop-shadow(0 45px 45px rgba(0, 0, 0, 0.5));
+  animation: lp-float 6s ease-in-out infinite;
+  z-index: 2;
+}
+
+.lp-hero-dots {
+  position: absolute;
+  top: 12%;
+  right: 6%;
+  display: grid;
+  grid-template-columns: repeat(6, 8px);
+  gap: 10px;
+  opacity: 0.5;
+}
+
+.lp-hero-dots span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.lp-scroll-cue {
+  position: absolute;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 40px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 14px;
+}
+
+.lp-scroll-cue::before {
+  content: '';
+  position: absolute;
+  top: 7px;
+  left: 50%;
+  width: 4px;
+  height: 8px;
+  margin-left: -2px;
+  border-radius: 4px;
+  background: #fff;
+  animation: lp-scroll 1.8s ease-in-out infinite;
+}
+
+/*
+* --------------------------------------------------
+* Marquee ticker under hero
+* --------------------------------------------------
+*/
+.lp-ticker {
+  background: var(--lp-ink);
+  color: #fff;
+  padding: 0.9rem 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.lp-ticker-track {
+  display: inline-flex;
+  gap: 3rem;
+  animation: lp-marquee 24s linear infinite;
+}
+
+.lp-ticker-track span {
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.85);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.lp-ticker-track span::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--lp-red-2);
+}
+
+/*
+* --------------------------------------------------
+* Section shell
+* --------------------------------------------------
+*/
+.lp-section {
+  padding: 6rem 0;
+}
+
+.lp-section-head {
+  max-width: 620px;
+  margin: 0 auto 3.4rem;
+}
+
+.lp-section-head.left {
+  margin-left: 0;
+}
+
+/*
+* --------------------------------------------------
+* Color picker cards (Choose your color)
+* --------------------------------------------------
+*/
+.lp-colors {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.6rem;
+}
+
+.lp-color-card {
+  position: relative;
+  background: var(--lp-white);
+  border-radius: 22px;
+  padding: 1.5rem 1.3rem 1.6rem;
+  border: 1px solid var(--lp-line);
+  text-align: center;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.lp-color-card:hover {
+  transform: translateY(-10px) rotateX(6deg);
+  box-shadow: 0 36px 60px -28px rgba(20, 17, 15, 0.35);
+}
+
+.lp-color-card .swatch {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.lp-color-card .img-wrap {
+  position: relative;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  margin-bottom: 1rem;
+}
+
+.lp-color-card .img-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 12% 12% 6%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(230, 54, 42, 0.12), transparent 70%);
+  z-index: 0;
+  transition: transform 0.3s;
+}
+
+.lp-color-card:hover .img-wrap::after {
+  transform: scale(1.1);
+}
+
+.lp-color-card img {
+  position: relative;
+  width: 100%;
+  border-radius: 16px;
+  z-index: 1;
+}
+
+.lp-color-card h4 {
+  margin: 0.2rem 0 0.2rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.lp-color-card .price {
+  color: var(--lp-red);
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+.lp-color-card .add {
+  margin-top: 1rem;
+  width: 100%;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+}
+
+/*
+* --------------------------------------------------
+* Feature glass cards (More power, less noise)
+* --------------------------------------------------
+*/
+.lp-features {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.4rem;
+}
+
+.lp-feature {
+  padding: 2rem 1.6rem;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #fff, #fbfaf9);
+  border: 1px solid var(--lp-line);
+  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+
+.lp-feature:hover {
+  transform: translateY(-8px);
+  border-color: transparent;
+  box-shadow: 0 30px 50px -26px rgba(230, 54, 42, 0.4);
+}
+
+.lp-feature .ic {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: var(--lp-grad-soft);
+  color: #fff;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 12px 24px -10px rgba(230, 54, 42, 0.6);
+  transition: transform 0.3s;
+}
+
+.lp-feature:hover .ic {
+  transform: rotate(-8deg) scale(1.06);
+}
+
+.lp-feature .ic svg {
+  width: 28px;
+  height: 28px;
+}
+
+.lp-feature h4 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--lp-red);
+  letter-spacing: 0.02em;
+}
+
+.lp-feature p {
+  margin: 0;
+  color: var(--lp-muted);
+  font-size: 0.9rem;
+}
+
+/*
+* --------------------------------------------------
+* Showcase band (video / freedom)
+* --------------------------------------------------
+*/
+.lp-showcase {
+  position: relative;
+  min-height: 520px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  overflow: hidden;
+  border-radius: 28px;
+}
+
+.lp-showcase img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.lp-showcase::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(20, 17, 15, 0.72) 0%, rgba(230, 54, 42, 0.4) 60%, transparent 100%);
+  z-index: 1;
+}
+
+.lp-showcase-inner {
+  position: relative;
+  z-index: 2;
+  width: min(1100px, 90%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.lp-showcase-inner h3 {
+  font-size: clamp(1.6rem, 3.4vw, 2.6rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  max-width: 16ch;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.lp-play {
+  flex: none;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  border: none;
+  background: #fff;
+  color: var(--lp-red);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.3s;
+}
+
+.lp-play:hover {
+  transform: scale(1.08);
+}
+
+.lp-play::before,
+.lp-play::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  animation: lp-ripple 2.4s ease-out infinite;
+}
+
+.lp-play::after {
+  animation-delay: 1.2s;
+}
+
+.lp-play svg {
+  width: 30px;
+  height: 30px;
+  margin-left: 4px;
+}
+
+/*
+* --------------------------------------------------
+* Split: main features / talk at a touch
+* --------------------------------------------------
+*/
+.lp-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 3.5rem;
+}
+
+.lp-split.reverse .lp-split-media {
+  order: 2;
+}
+
+.lp-split-media {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.lp-split-media .blob {
+  position: absolute;
+  width: 88%;
+  aspect-ratio: 1;
+  border-radius: 42% 58% 55% 45% / 48% 45% 55% 52%;
+  background: var(--lp-grad-soft);
+  opacity: 0.14;
+  animation: lp-morph 12s ease-in-out infinite;
+}
+
+.lp-split-media img {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  border-radius: 26px;
+  z-index: 1;
+}
+
+.lp-split-media.contain img {
+  filter: drop-shadow(0 40px 40px rgba(0, 0, 0, 0.18));
+  border-radius: 0;
+}
+
+.lp-flist {
+  list-style: none;
+  padding: 0;
+  margin: 1.6rem 0 0;
+  display: grid;
+  gap: 1.2rem;
+}
+
+.lp-flist li {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1rem 1.1rem;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid var(--lp-line);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.lp-flist li:hover {
+  transform: translateX(6px);
+  box-shadow: 0 20px 36px -24px rgba(20, 17, 15, 0.35);
+}
+
+.lp-flist .ic {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--lp-grad-soft);
+  color: #fff;
+}
+
+.lp-flist .ic svg {
+  width: 22px;
+  height: 22px;
+}
+
+.lp-flist h5 {
+  margin: 0 0 0.15rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.lp-flist p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--lp-muted);
+}
+
+.lp-mini-stats {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.lp-mini-stats b {
+  display: block;
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: var(--lp-red);
+  line-height: 1;
+}
+
+.lp-mini-stats small {
+  font-size: 0.75rem;
+  color: var(--lp-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/*
+* --------------------------------------------------
+* Dark red band (Smarter than average)
+* --------------------------------------------------
+*/
+.lp-band {
+  background:
+    radial-gradient(100% 120% at 100% 0%, #ff7a45 0%, transparent 45%),
+    linear-gradient(135deg, #e6362a 0%, #b3231a 100%);
+  color: #fff;
+  border-radius: 32px;
+  padding: 4.5rem 3rem;
+  overflow: hidden;
+}
+
+.lp-trio {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.6rem;
+  margin-top: 3rem;
+}
+
+.lp-trio-card {
+  text-align: center;
+  padding: 1.6rem;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(6px);
+  transition: transform 0.35s, background 0.35s;
+}
+
+.lp-trio-card:hover {
+  transform: translateY(-10px);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.lp-trio-card img {
+  width: 62%;
+  margin: 0 auto 1.2rem;
+  display: block;
+  filter: drop-shadow(0 24px 24px rgba(0, 0, 0, 0.4));
+  transition: transform 0.4s ease;
+}
+
+.lp-trio-card:hover img {
+  transform: translateY(-6px) scale(1.05);
+}
+
+.lp-trio-card h4 {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.lp-trio-card p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/*
+* --------------------------------------------------
+* Logo marquee
+* --------------------------------------------------
+*/
+.lp-logos {
+  padding: 3rem 0;
+  border-top: 1px solid var(--lp-line);
+  border-bottom: 1px solid var(--lp-line);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+.lp-logos-track {
+  display: flex;
+  align-items: center;
+  gap: 4.5rem;
+  animation: lp-marquee 22s linear infinite;
+  width: max-content;
+}
+
+.lp-logos-track img {
+  height: 30px;
+  width: auto;
+  opacity: 0.45;
+  filter: grayscale(1);
+  transition: opacity 0.3s, filter 0.3s;
+}
+
+.lp-logos-track img:hover {
+  opacity: 1;
+  filter: none;
+}
+
+/*
+* --------------------------------------------------
+* Reviews
+* --------------------------------------------------
+*/
+.lp-reviews {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.6rem;
+}
+
+.lp-review {
+  padding: 2rem;
+  border-radius: 22px;
+  background: #fff;
+  border: 1px solid var(--lp-line);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.lp-review:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 30px 50px -30px rgba(20, 17, 15, 0.4);
+}
+
+.lp-stars {
+  display: flex;
+  gap: 3px;
+  color: var(--lp-gold);
+  margin-bottom: 0.9rem;
+}
+
+.lp-stars svg {
+  width: 18px;
+  height: 18px;
+}
+
+.lp-review h4 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.lp-review p {
+  margin: 0 0 1.4rem;
+  color: var(--lp-muted);
+  font-size: 0.92rem;
+}
+
+.lp-review-author {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.lp-review-author img {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.lp-review-author b {
+  display: block;
+  font-size: 0.9rem;
+}
+
+.lp-review-author small {
+  color: var(--lp-muted);
+  font-size: 0.78rem;
+}
+
+/*
+* --------------------------------------------------
+* Big beats band (icon stats)
+* --------------------------------------------------
+*/
+.lp-beats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.4rem;
+  margin-top: 2.6rem;
+}
+
+.lp-beat {
+  text-align: center;
+  color: #fff;
+}
+
+.lp-beat .ic {
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 1rem;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s, background 0.3s;
+}
+
+.lp-beat:hover .ic {
+  transform: translateY(-6px) rotate(6deg);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.lp-beat .ic svg {
+  width: 32px;
+  height: 32px;
+}
+
+.lp-beat span {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.82rem;
+}
+
+/*
+* --------------------------------------------------
+* Final CTA
+* --------------------------------------------------
+*/
+.lp-cta {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 2rem;
+  background: linear-gradient(135deg, #1c1815 0%, #2a211d 100%);
+  border-radius: 32px;
+  padding: 4rem;
+  color: #fff;
+  overflow: hidden;
+}
+
+.lp-cta::before {
+  content: '';
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  right: -120px;
+  top: -120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(230, 54, 42, 0.55), transparent 70%);
+  filter: blur(10px);
+}
+
+.lp-cta-media {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.lp-cta-media img {
+  width: min(360px, 80%);
+  filter: drop-shadow(0 40px 40px rgba(0, 0, 0, 0.6));
+  animation: lp-float 7s ease-in-out infinite;
+}
+
+.lp-cta h2 {
+  position: relative;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 1.05;
+  margin: 0 0 1rem;
+}
+
+.lp-cta .price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  margin: 1.4rem 0;
+}
+
+.lp-cta .price-now {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--lp-gold);
+}
+
+.lp-cta .price-was {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: line-through;
+}
+
+/*
+* --------------------------------------------------
+* Perks strip
+* --------------------------------------------------
+*/
+.lp-perks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding: 2.4rem 0;
+}
+
+.lp-perk {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.9rem;
+}
+
+.lp-perk .ic {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--lp-grad-soft);
+  color: #fff;
+}
+
+.lp-perk .ic svg {
+  width: 22px;
+  height: 22px;
+}
+
+/*
+* --------------------------------------------------
+* Keyframes
+* --------------------------------------------------
+*/
+@keyframes lp-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-22px) rotate(1.5deg); }
+}
+
+@keyframes lp-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+@keyframes lp-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes lp-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(125, 255, 176, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(125, 255, 176, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(125, 255, 176, 0); }
+}
+
+@keyframes lp-scroll {
+  0% { transform: translateY(0); opacity: 1; }
+  60% { transform: translateY(12px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 0; }
+}
+
+@keyframes lp-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes lp-ripple {
+  0% { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+@keyframes lp-morph {
+  0%, 100% { border-radius: 42% 58% 55% 45% / 48% 45% 55% 52%; }
+  50% { border-radius: 58% 42% 45% 55% / 55% 52% 48% 45%; }
+}
+
+/*
+* --------------------------------------------------
+* Responsive
+* --------------------------------------------------
+*/
+@media (max-width: 960px) {
+  .lp-hero-grid { grid-template-columns: 1fr; text-align: center; padding-top: 6rem; }
+  .lp-hero-cta, .lp-hero-stats { justify-content: center; }
+  .lp-hero p { margin-inline: auto; }
+  .lp-colors { grid-template-columns: repeat(2, 1fr); }
+  .lp-features { grid-template-columns: repeat(2, 1fr); }
+  .lp-split { grid-template-columns: 1fr; gap: 2rem; }
+  .lp-split.reverse .lp-split-media { order: 0; }
+  .lp-trio { grid-template-columns: 1fr; }
+  .lp-reviews { grid-template-columns: 1fr; }
+  .lp-beats { grid-template-columns: repeat(2, 1fr); }
+  .lp-cta { grid-template-columns: 1fr; padding: 2.4rem; text-align: center; }
+  .lp-perks { grid-template-columns: 1fr; }
+  .lp-showcase-inner { flex-direction: column; text-align: center; }
+}
+
+@media (max-width: 560px) {
+  .lp-colors { grid-template-columns: 1fr; }
+  .lp-features { grid-template-columns: 1fr; }
+  .lp-beats { grid-template-columns: 1fr; }
+  .lp-section { padding: 4rem 0; }
+  .lp-band, .lp-cta { padding: 2rem 1.4rem; }
+}
+
+/*
+* --------------------------------------------------
+* Reduced motion — respect user preference
+* --------------------------------------------------
+*/
+@media (prefers-reduced-motion: reduce) {
+  .lp *,
+  .lp *::before,
+  .lp *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+}

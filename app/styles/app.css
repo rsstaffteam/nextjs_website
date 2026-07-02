@@ -592,3 +592,324 @@ button.reset:hover:not(:has(> *)) {
   gap: 0.75rem;
   flex-wrap: wrap;
 }
+
+/*
+* --------------------------------------------------
+* Site navbar (Sound Pro theme) — global, all pages
+* --------------------------------------------------
+*/
+:root {
+  --nav-red: #e6362a;
+  --nav-red-2: #ff5b39;
+  --nav-grad: linear-gradient(120deg, #e6362a 0%, #ff5b39 55%, #ff7a45 100%);
+  --nav-font: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: saturate(160%) blur(14px);
+  -webkit-backdrop-filter: saturate(160%) blur(14px);
+  border-bottom: 1px solid rgba(20, 17, 15, 0.07);
+  font-family: var(--nav-font);
+}
+
+.site-header-inner {
+  width: min(1200px, 94vw);
+  margin-inline: auto;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.site-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: #14110f;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+}
+
+.site-logo strong {
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.site-logo-mark {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--nav-grad);
+  box-shadow: 0 6px 14px -4px rgba(230, 54, 42, 0.6);
+  position: relative;
+}
+
+.site-logo-mark::after {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  border-bottom-color: transparent;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-inline: auto;
+}
+
+.site-nav-link {
+  position: relative;
+  text-decoration: none;
+  color: #4a4440;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  padding: 0.4rem 0;
+  transition: color 0.2s ease;
+}
+
+.site-nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--nav-grad);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+.site-nav-link:hover {
+  color: var(--nav-red);
+}
+
+.site-nav-link:hover::after,
+.site-nav-link.active::after {
+  transform: scaleX(1);
+}
+
+.site-nav-link.active {
+  color: var(--nav-red);
+}
+
+.site-header-ctas {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.site-icon-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(20, 17, 15, 0.1);
+  background: #fff;
+  color: #14110f;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
+  transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.site-icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.site-icon-btn:hover {
+  transform: translateY(-2px);
+  color: var(--nav-red);
+  border-color: rgba(230, 54, 42, 0.4);
+  box-shadow: 0 10px 20px -10px rgba(230, 54, 42, 0.5);
+}
+
+.site-cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--nav-grad);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 3px 8px -2px rgba(230, 54, 42, 0.7);
+}
+
+.site-signup {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.62rem 1.4rem;
+  border-radius: 999px;
+  background: var(--nav-grad);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-decoration: none;
+  box-shadow: 0 10px 22px -10px rgba(230, 54, 42, 0.7);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.site-signup:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px -12px rgba(230, 54, 42, 0.8);
+}
+
+.site-menu-toggle {
+  display: none;
+  font-size: 1.2rem;
+}
+
+@media (max-width: 860px) {
+  .site-nav {
+    display: none;
+  }
+  .site-signup {
+    display: none;
+  }
+  .site-menu-toggle {
+    display: inline-grid;
+  }
+  .site-header-ctas {
+    margin-left: auto;
+  }
+}
+
+/* Mobile drawer menu links */
+.header-menu-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-family: var(--nav-font);
+}
+
+.header-menu-mobile .header-menu-item {
+  padding: 0.8rem 0.4rem;
+  border-bottom: 1px solid rgba(20, 17, 15, 0.06);
+  text-decoration: none;
+  color: #14110f;
+  font-weight: 600;
+}
+
+.header-menu-mobile .header-menu-item.active {
+  color: var(--nav-red);
+}
+
+/*
+* --------------------------------------------------
+* Simple content pages (About / Reviews / Contact)
+* No motion — plain, readable pages.
+* --------------------------------------------------
+*/
+.simple-page {
+  font-family: var(--nav-font);
+  color: #14110f;
+  background:
+    radial-gradient(80% 60% at 100% 0%, rgba(255, 122, 69, 0.1), transparent 60%),
+    radial-gradient(70% 50% at 0% 0%, rgba(230, 54, 42, 0.08), transparent 55%),
+    #f6f5f3;
+}
+
+.simple-page-inner {
+  width: min(860px, 90vw);
+  margin-inline: auto;
+  padding: 5rem 0 6rem;
+}
+
+.simple-eyebrow {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--nav-red);
+  margin-bottom: 0.8rem;
+}
+
+.simple-page h1 {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  margin: 0 0 1.2rem;
+}
+
+.simple-page h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 2.4rem 0 0.8rem;
+}
+
+.simple-page p {
+  color: #4a4440;
+  font-size: 1.02rem;
+  line-height: 1.8;
+  margin: 0 0 1.1rem;
+  max-width: 68ch;
+}
+
+.simple-page ul {
+  color: #4a4440;
+  line-height: 1.8;
+  padding-left: 1.2rem;
+}
+
+.simple-card {
+  background: #fff;
+  border: 1px solid rgba(20, 17, 15, 0.08);
+  border-radius: 20px;
+  padding: 1.8rem;
+  margin-top: 1.4rem;
+}
+
+.simple-contact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2rem;
+  margin-top: 1.6rem;
+}
+
+.simple-contact-grid b {
+  display: block;
+  color: var(--nav-red);
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.4rem;
+}
+
+@media (max-width: 640px) {
+  .simple-contact-grid {
+    grid-template-columns: 1fr;
+  }
+}
