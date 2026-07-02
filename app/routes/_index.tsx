@@ -1,7 +1,6 @@
-import {useLoaderData, Link} from 'react-router';
+import {Link} from 'react-router';
 import type {Route} from './+types/_index';
 import {useEffect, useRef} from 'react';
-import type {FeaturedCollectionFragment} from 'storefrontapi.generated';
 import landingStyles from '~/styles/landing.css?url';
 import {
   IconSurround,
@@ -54,17 +53,6 @@ export function links() {
   ];
 }
 
-export async function loader(args: Route.LoaderArgs) {
-  // The landing page is fully self-contained with local assets, so the
-  // storefront query is optional — never let it block or break the render.
-  const featuredCollection = await args.context.storefront
-    .query(FEATURED_COLLECTION_QUERY)
-    .then((res) => res?.collections?.nodes?.[0] ?? null)
-    .catch(() => null);
-
-  return {featuredCollection};
-}
-
 /**
  * Lightweight scroll-reveal — a single IntersectionObserver watches every
  * element tagged `.reveal` and adds `.is-in` once. No animation library,
@@ -107,11 +95,9 @@ function useReveal() {
 }
 
 export default function Homepage() {
-  const {featuredCollection} = useLoaderData<typeof loader>();
   const root = useReveal();
-  const shopHref = featuredCollection
-    ? `/collections/${featuredCollection.handle}`
-    : '/collections';
+  // Every "Shop" / "Add to Cart" CTA funnels into the headphones builder.
+  const shopHref = '/headphones-builder';
 
   return (
     <div className="lp" ref={root}>
@@ -732,19 +718,3 @@ function PerksStrip() {
     </section>
   );
 }
-
-const FEATURED_COLLECTION_QUERY = `#graphql
-  fragment FeaturedCollection on Collection {
-    id
-    title
-    handle
-  }
-  query FeaturedCollection($country: CountryCode, $language: LanguageCode)
-    @inContext(country: $country, language: $language) {
-    collections(first: 1, sortKey: UPDATED_AT, reverse: true) {
-      nodes {
-        ...FeaturedCollection
-      }
-    }
-  }
-` as const;

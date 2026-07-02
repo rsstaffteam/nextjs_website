@@ -21,7 +21,7 @@ const NAV_LINKS = [
   {label: 'Home', to: '/', end: true},
   {label: 'About', to: '/about', end: false},
   {label: 'Reviews', to: '/reviews', end: false},
-  {label: 'Shop', to: '/collections', end: false},
+  {label: 'Shop', to: '/headphones-builder', end: false},
   {label: 'Contact', to: '/contact', end: false},
 ];
 

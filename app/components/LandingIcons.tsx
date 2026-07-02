@@ -180,6 +180,14 @@ export function IconReturn({className}: IconProps) {
   );
 }
 
+export function IconCheck({className}: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M4 12.5l5 5 11-11" />
+    </svg>
+  );
+}
+
 export function IconSearch({className}: IconProps) {
   return (
     <svg {...base} className={className}>
