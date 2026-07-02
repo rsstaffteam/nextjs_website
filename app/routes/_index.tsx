@@ -1,77 +1,70 @@
-import {Link} from 'react-router';
+import {Await, Link, useLoaderData} from 'react-router';
 import type {Route} from './+types/_index';
-import {useEffect, useRef} from 'react';
+import {Suspense, useEffect, useRef} from 'react';
+import {Image, Money} from '@shopify/hydrogen';
+import type {HomeProductsQuery} from 'storefrontapi.generated';
 import landingStyles from '~/styles/landing.css?url';
 import {
-  IconSurround,
-  IconPosition,
-  IconHandsFree,
-  IconVoice,
-  IconBattery,
-  IconWater,
-  IconTouch,
-  IconWave,
-  IconComfort,
-  IconCall,
-  IconFinger,
-  IconPlay,
   IconStar,
-  IconCart,
   IconArrow,
   IconTruck,
-  IconGlobe,
   IconReturn,
+  IconShield,
+  IconSparkle,
 } from '~/components/LandingIcons';
-
-/** Local imagery lives in /public/HOME - Headphones Shop */
-const IMG = '/HOME - Headphones Shop';
 
 export const meta: Route.MetaFunction = () => {
   return [
-    {title: 'Sound Pro — TWS Air 5 | Premium Wireless Headphones'},
+    {title: 'Aurelle — Elegant Watches & Smartwatches for Women'},
     {
       name: 'description',
       content:
-        'Experience wireless freedom and great sound in silence with the Sound Pro TWS Air 5. Up to 30 hours battery, active noise cancelling and fingertip control.',
+        'Aurelle curates elegant watches, smartwatches and interchangeable bands for the modern woman. Free worldwide shipping and easy returns.',
     },
   ];
 };
 
 export function links() {
-  return [
-    {rel: 'preconnect', href: 'https://fonts.googleapis.com'},
-    {
-      rel: 'preconnect',
-      href: 'https://fonts.gstatic.com',
-      crossOrigin: 'anonymous',
-    },
-    {
-      rel: 'stylesheet',
-      href: 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap',
-    },
-    {rel: 'stylesheet', href: landingStyles},
-  ];
+  return [{rel: 'stylesheet', href: landingStyles}];
+}
+
+export async function loader(args: Route.LoaderArgs) {
+  return loadDeferredData(args);
+}
+
+/** The product grid. Deferred so it never blocks TTFB. */
+function loadDeferredData({context}: Route.LoaderArgs) {
+  const products = context.storefront
+    .query(HOME_PRODUCTS_QUERY)
+    .catch((error: Error) => {
+      console.error(error);
+      return null;
+    });
+
+  return {products};
 }
 
 /**
- * Lightweight scroll-reveal — a single IntersectionObserver watches every
- * element tagged `.reveal` and adds `.is-in` once. No animation library,
- * no per-element listeners, unobserved after firing. Cheap and smooth.
+ * Lightweight scroll-reveal — a single IntersectionObserver adds `.is-in`
+ * once per `.reveal` element and unobserves it. No animation library.
  */
 function useReveal() {
   const root = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const scope = root.current;
     if (!scope) return;
 
-    const targets = scope.querySelectorAll<HTMLElement>('.reveal');
+    const revealAll = () =>
+      scope
+        .querySelectorAll<HTMLElement>('.reveal')
+        .forEach((el) => el.classList.add('is-in'));
 
+    // No IntersectionObserver support or reduced motion → just show everything.
     if (
       typeof IntersectionObserver === 'undefined' ||
       window.matchMedia('(prefers-reduced-motion: reduce)').matches
     ) {
-      targets.forEach((el) => el.classList.add('is-in'));
+      revealAll();
       return;
     }
 
@@ -84,383 +77,99 @@ function useReveal() {
           }
         }
       },
-      {threshold: 0.15, rootMargin: '0px 0px -8% 0px'},
+      {threshold: 0.12, rootMargin: '0px 0px -6% 0px'},
     );
 
-    targets.forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, []);
+    const observeNew = () =>
+      scope
+        .querySelectorAll<HTMLElement>('.reveal:not(.is-in)')
+        .forEach((el) => io.observe(el));
 
+    observeNew();
+
+    // Deferred sections (e.g. the product grid) mount AFTER this effect runs,
+    // so watch for new nodes and observe them too — otherwise they'd stay
+    // stuck at opacity:0 and appear "missing".
+    const mo = new MutationObserver(observeNew);
+    mo.observe(scope, {childList: true, subtree: true});
+
+    return () => {
+      io.disconnect();
+      mo.disconnect();
+    };
+  }, []);
   return root;
 }
 
 export default function Homepage() {
+  const {products} = useLoaderData<typeof loader>();
   const root = useReveal();
-  // Every "Shop" / "Add to Cart" CTA funnels into the headphones builder.
-  const shopHref = '/headphones-builder';
 
   return (
     <div className="lp" ref={root}>
-      <Hero shopHref={shopHref} />
-      <Ticker />
-      <ColorPicker shopHref={shopHref} />
-      <FeatureCards />
-      <ShowcaseBand />
-      <MainFeatures />
-      <SmarterBand />
-      <TalkAtTouch shopHref={shopHref} />
-      <LogoStrip />
+      <Hero />
+      <Marquee />
+      <FeaturedProducts products={products} />
+      <Editorial />
       <Reviews />
-      <BigBeats />
-      <FinalCta shopHref={shopHref} />
-      <PerksStrip />
+      <Perks />
     </div>
   );
 }
 
 /* ---------------------------------- Hero ---------------------------------- */
-function Hero({shopHref}: {shopHref: string}) {
+function Hero() {
   return (
     <section className="lp-hero">
-      <div className="lp-hero-cut" aria-hidden="true" />
-      <div className="lp-hero-dots" aria-hidden="true">
-        {Array.from({length: 36}).map((_, i) => (
-          <span key={i} />
-        ))}
-      </div>
-
-      <div className="lp-hero-grid">
+      <div className="lp-hero-inner">
         <div className="lp-hero-copy">
-          <span className="lp-hero-badge">
-            <span className="dot" /> New Drop · 2026
-          </span>
+          <span className="lp-hero-badge">New Season · 2026</span>
           <h1>
-            Sound Pro
-            <span>TWS Air 5</span>
+            Timeless elegance,
+            <span>on your wrist.</span>
           </h1>
           <p>
-            Wireless freedom and immersive, studio-grade sound in absolute
-            silence. Adaptive noise cancelling, 30 hours of battery and
-            fingertip control — engineered to move with you.
+            Discover Aurelle&apos;s curated edit of refined watches,
+            smartwatches and interchangeable bands — crafted to move with the
+            modern woman.
           </p>
           <div className="lp-hero-cta">
-            <Link className="lp-btn" to={shopHref}>
-              Shop Now <IconArrow />
+            <Link className="lp-btn" to="/collections">
+              Shop the Collection <IconArrow />
             </Link>
-            <a className="lp-btn ghost" href="#features">
-              Explore Features
-            </a>
+            <Link className="lp-btn ghost" to="/collections/all">
+              View All Watches
+            </Link>
           </div>
           <div className="lp-hero-stats">
             <div>
-              <b>30h</b>
-              <small>Battery Life</small>
-            </div>
-            <div>
-              <b>ANC</b>
-              <small>Noise Cancel</small>
-            </div>
-            <div>
               <b>4.9★</b>
-              <small>2k+ Reviews</small>
+              <small>Loved by 10k+</small>
+            </div>
+            <div>
+              <b>Free</b>
+              <small>Worldwide Shipping</small>
+            </div>
+            <div>
+              <b>30-Day</b>
+              <small>Easy Returns</small>
             </div>
           </div>
         </div>
 
-        <div className="lp-hero-visual">
-          <div className="lp-hero-halo" aria-hidden="true" />
-          <div className="lp-hero-ring" aria-hidden="true" />
-          <img
-            className="lp-hero-headphones"
-            src={`${IMG}/imgi_3_headphones.png`}
-            alt="Sound Pro TWS Air 5 wireless headphones"
-            width={520}
-            height={560}
-            // React 18 emits the attribute lowercase
-            {...{fetchpriority: 'high'}}
-            decoding="async"
-          />
-        </div>
-      </div>
-
-      <div className="lp-scroll-cue" aria-hidden="true" />
-    </section>
-  );
-}
-
-/* --------------------------------- Ticker --------------------------------- */
-function Ticker() {
-  const items = [
-    'Free Worldwide Shipping',
-    'Active Noise Cancelling',
-    '30 Hours Playtime',
-    'Water Resistant',
-    'One Touch Listening',
-    '2 Year Warranty',
-  ];
-  const loop = [...items, ...items];
-  return (
-    <div className="lp-ticker" aria-hidden="true">
-      <div className="lp-ticker-track">
-        {loop.map((t, i) => (
-          <span key={i}>{t}</span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ------------------------------ Color picker ------------------------------ */
-const COLORS = [
-  {
-    name: 'Gold Headphones TWS',
-    price: '$99.00',
-    swatch: '#d9a441',
-    img: 'imgi_4_gold-1-300x300.jpg',
-  },
-  {
-    name: 'Green Headphones TWS',
-    price: '$99.00',
-    swatch: '#4c8f6b',
-    img: 'imgi_5_green-1-300x300.jpg',
-  },
-  {
-    name: 'Headphones Red TWS',
-    price: '$99.00',
-    swatch: '#e6362a',
-    img: 'imgi_6_red-1-300x300.jpg',
-  },
-  {
-    name: 'Violet Headphones TWS',
-    price: '$94.00',
-    swatch: '#8a63d2',
-    img: 'imgi_7_violet-1-300x300.jpg',
-  },
-];
-
-function ColorPicker({shopHref}: {shopHref: string}) {
-  return (
-    <section className="lp-section">
-      <div className="lp-wrap">
-        <div className="lp-section-head lp-center reveal">
-          <span className="lp-eyebrow">Shop Headphones</span>
-          <h2 className="lp-title">
-            Choose Your <span className="lp-gradient-text">Color</span>
-          </h2>
-        </div>
-        <div className="lp-colors">
-          {COLORS.map((c, i) => (
-            <article
-              key={c.name}
-              className="lp-color-card reveal"
-              style={{['--reveal-delay' as string]: `${i * 90}ms`}}
-            >
-              <span className="swatch" style={{background: c.swatch}} />
-              <div className="img-wrap">
-                <img
-                  src={`${IMG}/${c.img}`}
-                  alt={c.name}
-                  width={300}
-                  height={300}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-              <h4>{c.name}</h4>
-              <div className="price">{c.price}</div>
-              <Link className="lp-btn add" to={shopHref}>
-                <IconCart /> Add to Cart
-              </Link>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------ Feature cards ----------------------------- */
-const FEATURES = [
-  {
-    icon: <IconSurround />,
-    title: 'Surround Sounds',
-    text: 'Immersive 360° spatial audio that places you at the centre of every track.',
-  },
-  {
-    icon: <IconPosition />,
-    title: 'Position Control',
-    text: 'Adaptive drivers auto-tune to your head position for a perfect stage.',
-  },
-  {
-    icon: <IconHandsFree />,
-    title: 'Hands-Free',
-    text: 'Crystal-clear calls with dual-mic beamforming and echo cancellation.',
-  },
-  {
-    icon: <IconVoice />,
-    title: 'Voice Assistant',
-    text: 'Summon your assistant instantly with a single touch — no phone needed.',
-  },
-];
-
-function FeatureCards() {
-  return (
-    <section className="lp-section" id="features" style={{paddingTop: 0}}>
-      <div className="lp-wrap">
-        <div className="lp-section-head lp-center reveal">
-          <span className="lp-eyebrow">Shop Headphones</span>
-          <h2 className="lp-title">
-            More Power Even <span className="lp-gradient-text">Less Noise</span>
-          </h2>
-        </div>
-        <div className="lp-features">
-          {FEATURES.map((f, i) => (
-            <article
-              key={f.title}
-              className="lp-feature reveal"
-              style={{['--reveal-delay' as string]: `${i * 90}ms`}}
-            >
-              <div className="ic">{f.icon}</div>
-              <h4>{f.title}</h4>
-              <p>{f.text}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------ Showcase band ----------------------------- */
-function ShowcaseBand() {
-  return (
-    <section className="lp-section" style={{paddingTop: 0}}>
-      <div className="lp-wrap reveal">
-        <div className="lp-showcase">
-          <img
-            src={`${IMG}/imgi_51_sound-5-1024x663.jpg`}
-            alt="Woman enjoying wireless headphones"
-            width={1024}
-            height={663}
-            loading="lazy"
-            decoding="async"
-          />
-          <div className="lp-showcase-inner">
-            <h3>Wireless Freedom, Great Sound in Silence.</h3>
-            <button className="lp-play" type="button" aria-label="Play video">
-              <IconPlay />
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------ Main features ----------------------------- */
-const MAIN_FEATURES = [
-  {
-    icon: <IconBattery />,
-    title: 'Up to 30 Hours of Battery Life',
-    text: 'All-day power with a fast 10-minute charge for 3 extra hours.',
-  },
-  {
-    icon: <IconWave />,
-    title: 'HD Noise Cancelling Processor',
-    text: 'A dedicated chip erases the world so only your music remains.',
-  },
-  {
-    icon: <IconTouch />,
-    title: 'Control Everything You Like',
-    text: 'Play, skip, call and summon your assistant with a tap.',
-  },
-];
-
-function MainFeatures() {
-  return (
-    <section className="lp-section" style={{paddingTop: 0}}>
-      <div className="lp-wrap">
-        <div className="lp-split">
-          <div className="lp-split-media contain reveal">
-            <div className="blob" aria-hidden="true" />
-            <img
-              src={`${IMG}/imgi_49_img-7-400x400.png`}
-              alt="Side profile of the Sound Pro headphones"
-              width={400}
-              height={400}
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-          <div className="lp-split-copy reveal">
-            <span className="lp-eyebrow">Shop Headphones</span>
-            <h2 className="lp-title">
-              Main <span className="lp-gradient-text">Features</span>
-            </h2>
-            <ul className="lp-flist">
-              {MAIN_FEATURES.map((f) => (
-                <li key={f.title}>
-                  <span className="ic">{f.icon}</span>
-                  <div>
-                    <h5>{f.title}</h5>
-                    <p>{f.text}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------- Smarter band ----------------------------- */
-const TRIO = [
-  {
-    img: 'imgi_9_img-1.png',
-    title: 'Total Comfort',
-    text: 'Memory-foam ear cushions stay cloud-soft through the longest sessions.',
-  },
-  {
-    img: 'imgi_10_img2.png',
-    title: 'Cleared Calling',
-    text: 'Beamforming mics isolate your voice so every call comes through clean.',
-  },
-  {
-    img: 'imgi_11_img-3.png',
-    title: 'Fingertip Control',
-    text: 'Intuitive touch panels put your entire playlist under one finger.',
-  },
-];
-
-function SmarterBand() {
-  return (
-    <section className="lp-section" style={{paddingTop: 0}}>
-      <div className="lp-wrap">
-        <div className="lp-band reveal">
-          <div className="lp-section-head lp-center" style={{marginBottom: 0}}>
-            <span className="lp-eyebrow on-dark">Shop Headphones</span>
-            <h2 className="lp-title" style={{color: '#fff'}}>
-              Smarter Than Your Average Headphones
-            </h2>
-          </div>
-          <div className="lp-trio">
-            {TRIO.map((t, i) => (
-              <article
-                key={t.title}
-                className="lp-trio-card"
-                style={{['--reveal-delay' as string]: `${i * 90}ms`}}
-              >
-                <img
-                  src={`${IMG}/${t.img}`}
-                  alt={t.title}
-                  loading="lazy"
-                  decoding="async"
-                />
-                <h4>{t.title}</h4>
-                <p>{t.text}</p>
-              </article>
+        <div className="lp-hero-visual" aria-hidden="true">
+          <div className="lp-hero-orb" />
+          <div className="lp-hero-ring" />
+          <div className="lp-hero-dial">
+            <span className="lp-hero-hand hour" />
+            <span className="lp-hero-hand minute" />
+            <span className="lp-hero-pin" />
+            {Array.from({length: 12}).map((_, i) => (
+              <span
+                key={i}
+                className="lp-hero-tick"
+                style={{transform: `rotate(${i * 30}deg) translateY(-118px)`}}
+              />
             ))}
           </div>
         </div>
@@ -469,53 +178,165 @@ function SmarterBand() {
   );
 }
 
-/* ------------------------------ Talk at a touch --------------------------- */
-function TalkAtTouch({shopHref}: {shopHref: string}) {
+/* --------------------------------- Marquee -------------------------------- */
+function Marquee() {
+  const items = [
+    'Free Worldwide Shipping',
+    'Interchangeable Bands',
+    '2-Year Warranty',
+    'Water Resistant',
+    'Gift Ready Packaging',
+    '30-Day Returns',
+  ];
+  const loop = [...items, ...items];
+  return (
+    <div className="lp-marquee" aria-hidden="true">
+      <div className="lp-marquee-track">
+        {loop.map((t, i) => (
+          <span key={i}>
+            <IconSparkle /> {t}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ----------------------------- Featured products -------------------------- */
+function FeaturedProducts({
+  products,
+}: {
+  products: Promise<HomeProductsQuery | null>;
+}) {
+  return (
+    <section className="lp-section lp-section-soft">
+      <div className="lp-wrap">
+        <div className="lp-head lp-center reveal">
+          <span className="lp-eyebrow">Best Sellers</span>
+          <h2 className="lp-title">Most Loved This Season</h2>
+        </div>
+        <Suspense fallback={<ProductGridSkeleton />}>
+          <Await resolve={products}>
+            {(res) => (
+              <div className="lp-products">
+                {res?.products?.nodes?.map((p, i) => (
+                  <ProductCard key={p.id} product={p} index={i} />
+                )) ?? null}
+              </div>
+            )}
+          </Await>
+        </Suspense>
+        <div className="lp-center" style={{marginTop: '2.6rem'}}>
+          <Link className="lp-btn" to="/collections/all">
+            View All Watches <IconArrow />
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ProductCard({
+  product,
+  index,
+}: {
+  product: HomeProductsQuery['products']['nodes'][number];
+  index: number;
+}) {
+  const price = product.priceRange.minVariantPrice;
+  const compareAt = product.compareAtPriceRange?.minVariantPrice;
+  const onSale =
+    compareAt && Number(compareAt.amount) > Number(price.amount);
+
+  return (
+    <Link
+      to={`/products/${product.handle}`}
+      className="lp-product reveal"
+      prefetch="intent"
+      style={{['--reveal-delay' as string]: `${(index % 4) * 70}ms`}}
+    >
+      <div className="lp-product-media">
+        {onSale ? <span className="lp-product-tag">Sale</span> : null}
+        {product.featuredImage ? (
+          <Image
+            data={product.featuredImage}
+            aspectRatio="1/1"
+            sizes="(min-width: 45em) 300px, 45vw"
+            loading="lazy"
+          />
+        ) : (
+          <div className="lp-collection-placeholder" />
+        )}
+      </div>
+      <div className="lp-product-info">
+        <h3>{product.title}</h3>
+        <div className="lp-product-price">
+          <Money data={price} />
+          {onSale ? (
+            <s>
+              <Money data={compareAt} />
+            </s>
+          ) : null}
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function ProductGridSkeleton() {
+  return (
+    <div className="lp-products">
+      {Array.from({length: 8}).map((_, i) => (
+        <div key={i} className="lp-product is-skeleton">
+          <div className="lp-product-media" />
+          <div className="lp-product-info">
+            <span className="lp-skel-line" />
+            <span className="lp-skel-line short" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* -------------------------------- Editorial ------------------------------- */
+function Editorial() {
   return (
     <section className="lp-section">
       <div className="lp-wrap">
-        <div className="lp-split reverse">
-          <div className="lp-split-media reveal">
-            <div className="blob" aria-hidden="true" />
-            <img
-              src={`${IMG}/imgi_51_sound-5-1024x663.jpg`}
-              alt="Person using touch controls on headphones"
-              width={1024}
-              height={663}
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-          <div className="lp-split-copy reveal">
-            <span className="lp-eyebrow">Shop Headphones</span>
+        <div className="lp-editorial reveal">
+          <div className="lp-editorial-copy">
+            <span className="lp-eyebrow">The Aurelle Promise</span>
             <h2 className="lp-title">
-              Talk at a Touch With{' '}
-              <span className="lp-gradient-text">Quick Attention</span>
+              Designed to be worn, made to be treasured.
             </h2>
-            <p style={{color: 'var(--lp-muted)'}}>
-              Lower the volume and lean into a conversation without lifting a
-              finger from your side. Quick Attention mode brings the outside
-              world back in an instant, then restores your soundstage the moment
-              you let go.
+            <p>
+              Every Aurelle timepiece is finished by hand and built to last —
+              from surgical-grade cases to interchangeable bands that let you
+              restyle your wrist in seconds. Elegant enough for the office,
+              effortless enough for everyday.
             </p>
-            <div className="lp-mini-stats">
-              <div>
-                <b>0.1s</b>
-                <small>Touch Response</small>
-              </div>
-              <div>
-                <b>2×</b>
-                <small>Mic Clarity</small>
-              </div>
-              <div>
-                <b>IPX5</b>
-                <small>Water Rating</small>
-              </div>
-            </div>
-            <div style={{marginTop: '2rem'}}>
-              <Link className="lp-btn" to={shopHref}>
-                Shop Now <IconArrow />
-              </Link>
+            <ul className="lp-editorial-list">
+              <li>
+                <IconSparkle /> Premium stainless steel &amp; mineral crystal
+              </li>
+              <li>
+                <IconShield /> 2-year international warranty
+              </li>
+              <li>
+                <IconReturn /> 30-day no-questions returns
+              </li>
+            </ul>
+            <Link className="lp-btn" to="/pages/about">
+              Our Story <IconArrow />
+            </Link>
+          </div>
+          <div className="lp-editorial-art" aria-hidden="true">
+            <div className="lp-editorial-blob" />
+            <div className="lp-hero-dial small">
+              <span className="lp-hero-hand hour" />
+              <span className="lp-hero-hand minute" />
+              <span className="lp-hero-pin" />
             </div>
           </div>
         </div>
@@ -524,74 +345,39 @@ function TalkAtTouch({shopHref}: {shopHref: string}) {
   );
 }
 
-/* -------------------------------- Logo strip ------------------------------ */
-function LogoStrip() {
-  const logos = [
-    'imgi_13_logoipsum-logo-52.svg',
-    'imgi_14_logoipsum-logo-53.svg',
-    'imgi_15_logoipsum-logo-54.svg',
-    'imgi_16_logoipsum-logo-55.svg',
-  ];
-  const loop = [...logos, ...logos, ...logos];
-  return (
-    <div className="lp-logos" aria-hidden="true">
-      <div className="lp-logos-track">
-        {loop.map((l, i) => (
-          <img key={i} src={`${IMG}/${l}`} alt="" loading="lazy" />
-        ))}
-      </div>
-    </div>
-  );
-}
-
 /* --------------------------------- Reviews -------------------------------- */
 const REVIEWS = [
   {
-    title: 'Better Than Expected',
-    text: 'The sound is huge and the noise cancelling is unreal on my commute. Battery genuinely lasts all week.',
-    name: 'Jimmy Case',
-    role: 'Verified Buyer',
-    avatar: 'imgi_17_customer-1.png',
+    title: 'My new everyday watch',
+    text: 'Elegant, lightweight and the rose-gold band goes with everything. I get compliments constantly.',
+    name: 'Sophia R.',
   },
   {
-    title: 'Love the Sound of Headphones',
-    text: 'Deep bass, crisp highs and the most comfortable cushions I have ever worn. Worth every cent.',
-    name: 'Lena Stevens',
-    role: 'Verified Buyer',
-    avatar: 'imgi_18_customer-2.png',
+    title: 'Better than expected',
+    text: 'The build quality feels far more expensive than the price. Shipping was fast and gift packaging was gorgeous.',
+    name: 'Amelia K.',
   },
   {
-    title: 'Great Noise Cancellation',
-    text: 'I can finally focus in a busy office. One tap for quick attention is a game changer for meetings.',
-    name: 'John Doe',
-    role: 'Verified Buyer',
-    avatar: 'imgi_17_customer-1.png',
-  },
-  {
-    title: 'Perfect and Light Design',
-    text: 'So light I forget I am wearing them. The touch controls are intuitive and the app is excellent.',
-    name: 'Penny Smith',
-    role: 'Verified Buyer',
-    avatar: 'imgi_18_customer-2.png',
+    title: 'Love the swappable bands',
+    text: 'Changed from the steel band to silicone for the gym in seconds. So versatile and comfortable.',
+    name: 'Hannah L.',
   },
 ];
 
 function Reviews() {
   return (
-    <section className="lp-section">
+    <section className="lp-section lp-section-soft">
       <div className="lp-wrap">
-        <div className="lp-section-head lp-center reveal">
-          <span className="lp-eyebrow">Customer Reviews</span>
-          <h2 className="lp-title">
-            What Do <span className="lp-gradient-text">They Say</span>
-          </h2>
+        <div className="lp-head lp-center reveal">
+          <span className="lp-eyebrow">Customer Love</span>
+          <h2 className="lp-title">What Women Are Saying</h2>
         </div>
         <div className="lp-reviews">
           {REVIEWS.map((r, i) => (
             <article
               key={r.title}
               className="lp-review reveal"
-              style={{['--reveal-delay' as string]: `${(i % 2) * 90}ms`}}
+              style={{['--reveal-delay' as string]: `${i * 80}ms`}}
             >
               <div className="lp-stars">
                 {Array.from({length: 5}).map((_, s) => (
@@ -600,20 +386,7 @@ function Reviews() {
               </div>
               <h4>{r.title}</h4>
               <p>{r.text}</p>
-              <div className="lp-review-author">
-                <img
-                  src={`${IMG}/${r.avatar}`}
-                  alt={r.name}
-                  width={46}
-                  height={46}
-                  loading="lazy"
-                  decoding="async"
-                />
-                <div>
-                  <b>{r.name}</b>
-                  <small>{r.role}</small>
-                </div>
-              </div>
+              <b>— {r.name}</b>
             </article>
           ))}
         </div>
@@ -622,95 +395,25 @@ function Reviews() {
   );
 }
 
-/* -------------------------------- Big beats ------------------------------- */
-const BEATS = [
-  {icon: <IconBattery />, label: '30 Hours Battery Life'},
-  {icon: <IconWater />, label: 'Water Resistant'},
-  {icon: <IconTouch />, label: 'One Touch Listening'},
-  {icon: <IconWave />, label: 'Deep Sounds'},
-];
-
-function BigBeats() {
-  return (
-    <section className="lp-section" style={{paddingTop: 0}}>
-      <div className="lp-wrap">
-        <div className="lp-band reveal">
-          <div className="lp-section-head lp-center" style={{marginBottom: 0}}>
-            <span className="lp-eyebrow on-dark">Get Yours Now</span>
-            <h2 className="lp-title" style={{color: '#fff'}}>
-              Big Beats on the Go
-            </h2>
-          </div>
-          <div className="lp-beats">
-            {BEATS.map((b, i) => (
-              <div
-                key={b.label}
-                className="lp-beat"
-                style={{['--reveal-delay' as string]: `${i * 90}ms`}}
-              >
-                <div className="ic">{b.icon}</div>
-                <span>{b.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------- Final CTA -------------------------------- */
-function FinalCta({shopHref}: {shopHref: string}) {
-  return (
-    <section className="lp-section" style={{paddingTop: 0}}>
-      <div className="lp-wrap">
-        <div className="lp-cta reveal">
-          <div className="lp-cta-media">
-            <img
-              src={`${IMG}/imgi_3_headphones.png`}
-              alt="Sound Pro TWS Air 5"
-              width={360}
-              height={388}
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-          <div>
-            <span className="lp-eyebrow on-dark">Shop Headphones</span>
-            <h2>Big Beats on the Go</h2>
-            <p style={{color: 'rgba(255,255,255,0.75)'}}>
-              Get 15% off on orders over $200. Free express delivery and a
-              2-year warranty on every pair.
-            </p>
-            <div className="price-row">
-              <span className="price-now">$99</span>
-              <span className="price-was">$139</span>
-            </div>
-            <Link className="lp-btn" to={shopHref}>
-              <IconCart /> Add to Cart
-            </Link>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------- Perks strip ------------------------------ */
-function PerksStrip() {
+/* ---------------------------------- Perks --------------------------------- */
+function Perks() {
   const perks = [
-    {icon: <IconTruck />, label: 'Free Shipping'},
-    {icon: <IconGlobe />, label: 'Worldwide Delivery'},
-    {icon: <IconReturn />, label: 'Money Return'},
+    {icon: <IconTruck />, t: 'Free Worldwide Shipping', s: 'On every order'},
+    {icon: <IconReturn />, t: '30-Day Returns', s: 'Shop with confidence'},
+    {icon: <IconShield />, t: '2-Year Warranty', s: 'On all timepieces'},
+    {icon: <IconSparkle />, t: 'Gift Ready', s: 'Beautiful packaging'},
   ];
   return (
-    <section className="lp-section" style={{paddingBottom: '5rem'}}>
+    <section className="lp-section">
       <div className="lp-wrap">
         <div className="lp-perks reveal">
           {perks.map((p) => (
-            <div className="lp-perk" key={p.label}>
+            <div className="lp-perk" key={p.t}>
               <span className="ic">{p.icon}</span>
-              {p.label}
+              <div>
+                <b>{p.t}</b>
+                <small>{p.s}</small>
+              </div>
             </div>
           ))}
         </div>
@@ -718,3 +421,41 @@ function PerksStrip() {
     </section>
   );
 }
+
+/* --------------------------------- Queries -------------------------------- */
+const HOME_PRODUCTS_QUERY = `#graphql
+  fragment HomeMoney on MoneyV2 {
+    amount
+    currencyCode
+  }
+  fragment HomeProduct on Product {
+    id
+    title
+    handle
+    featuredImage {
+      id
+      altText
+      url
+      width
+      height
+    }
+    priceRange {
+      minVariantPrice {
+        ...HomeMoney
+      }
+    }
+    compareAtPriceRange {
+      minVariantPrice {
+        ...HomeMoney
+      }
+    }
+  }
+  query HomeProducts($country: CountryCode, $language: LanguageCode)
+    @inContext(country: $country, language: $language) {
+    products(first: 8, sortKey: BEST_SELLING) {
+      nodes {
+        ...HomeProduct
+      }
+    }
+  }
+` as const;

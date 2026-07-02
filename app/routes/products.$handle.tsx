@@ -16,9 +16,14 @@ import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 
+type ProductQuestion = {
+  question: string;
+  answer: string;
+};
+
 export const meta: Route.MetaFunction = ({data}) => {
   return [
-    {title: `Hydrogen | ${data?.product.title ?? ''}`},
+    {title: `${data?.product.title ?? 'Watch'} | Aurelle`},
     {
       rel: 'canonical',
       href: `/products/${data?.product.handle}`,
@@ -85,6 +90,9 @@ function loadDeferredData({context, params}: Route.LoaderArgs) {
 
 export default function Product() {
   const {product} = useLoaderData<typeof loader>();
+  const productQuestions = parseProductQuestions(
+    product.productQuestions?.value,
+  );
 
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
@@ -108,6 +116,9 @@ export default function Product() {
     <div className="product">
       <ProductImage image={selectedVariant?.image} />
       <div className="product-main">
+        {product.vendor ? (
+          <span className="product-vendor">{product.vendor}</span>
+        ) : null}
         <h1>{title}</h1>
         <ProductPrice
           price={selectedVariant?.price}
@@ -119,12 +130,26 @@ export default function Product() {
           selectedVariant={selectedVariant}
         />
         <br />
-        <br />
-        <p>
-          <strong>Description</strong>
-        </p>
-        <br />
-        <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
+        <h2 className="product-section-title">Description</h2>
+        <div
+          className="product-description"
+          dangerouslySetInnerHTML={{__html: descriptionHtml}}
+        />
+        {productQuestions.length > 0 ? (
+          <section className="product-questions" aria-labelledby="product-questions-title">
+            <h2 id="product-questions-title" className="product-section-title">
+              Questions &amp; Answers
+            </h2>
+            <div className="product-questions-list">
+              {productQuestions.map(({question, answer}, index) => (
+                <details className="product-question" key={`${question}-${index}`}>
+                  <summary>{question}</summary>
+                  <p>{answer}</p>
+                </details>
+              ))}
+            </div>
+          </section>
+        ) : null}
         <br />
       </div>
       <Analytics.ProductView
@@ -144,6 +169,30 @@ export default function Product() {
       />
     </div>
   );
+}
+
+function parseProductQuestions(value?: string | null): ProductQuestion[] {
+  if (!value) return [];
+
+  try {
+    const parsed = JSON.parse(value);
+
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed
+      .map((item) => {
+        if (!item || typeof item !== 'object') return null;
+
+        const question =
+          typeof item.question === 'string' ? item.question.trim() : '';
+        const answer = typeof item.answer === 'string' ? item.answer.trim() : '';
+
+        return question && answer ? {question, answer} : null;
+      })
+      .filter((item): item is ProductQuestion => Boolean(item));
+  } catch {
+    return [];
+  }
 }
 
 const PRODUCT_VARIANT_FRAGMENT = `#graphql
@@ -191,6 +240,9 @@ const PRODUCT_FRAGMENT = `#graphql
     handle
     descriptionHtml
     description
+    productQuestions: metafield(namespace: "custom", key: "product_questions") {
+      value
+    }
     encodedVariantExistence
     encodedVariantAvailability
     options {

@@ -180,6 +180,32 @@ export function IconReturn({className}: IconProps) {
   );
 }
 
+export function IconShield({className}: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M12 3l7 3v5c0 4.6-3 8-7 10-4-2-7-5.4-7-10V6l7-3Z" />
+      <path d="M9 12l2 2 4-4" />
+    </svg>
+  );
+}
+
+export function IconSparkle({className}: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M12 3l1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6L12 3Z" />
+    </svg>
+  );
+}
+
+export function IconClock({className}: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3.5 2" />
+    </svg>
+  );
+}
+
 export function IconCheck({className}: IconProps) {
   return (
     <svg {...base} className={className}>

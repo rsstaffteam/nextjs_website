@@ -16,23 +16,22 @@ interface HeaderProps {
   publicStoreDomain: string;
 }
 
-/** Primary navigation — fixed to match the Sound Pro landing design. */
+/** Primary navigation — fixed to match the Aurelle store design. */
 const NAV_LINKS = [
   {label: 'Home', to: '/', end: true},
+  {label: 'Shop', to: '/collections', end: false},
   {label: 'About', to: '/about', end: false},
   {label: 'Reviews', to: '/reviews', end: false},
-  {label: 'Shop', to: '/headphones-builder', end: false},
   {label: 'Contact', to: '/contact', end: false},
 ];
 
-export function Header({header, isLoggedIn, cart}: HeaderProps) {
-  const {shop} = header;
+export function Header({isLoggedIn, cart}: HeaderProps) {
   return (
     <header className="site-header">
       <div className="site-header-inner">
         <NavLink prefetch="intent" to="/" className="site-logo" end>
           <span className="site-logo-mark" aria-hidden="true" />
-          <strong>{shop?.name || 'Sound Pro'}</strong>
+          <strong>Aurelle</strong>
         </NavLink>
 
         <nav className="site-nav" role="navigation">

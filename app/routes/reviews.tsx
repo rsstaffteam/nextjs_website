@@ -2,31 +2,31 @@ import type {Route} from './+types/reviews';
 
 export const meta: Route.MetaFunction = () => {
   return [
-    {title: 'Reviews | Sound Pro'},
-    {name: 'description', content: 'What our customers say about Sound Pro.'},
+    {title: 'Reviews | Aurelle'},
+    {name: 'description', content: 'What our customers say about Aurelle.'},
   ];
 };
 
 const REVIEWS = [
   {
-    title: 'Better Than Expected',
-    text: 'The sound is huge and the noise cancelling is unreal on my commute. Battery genuinely lasts all week.',
-    name: 'Jimmy Case',
+    title: 'My new everyday watch',
+    text: 'Elegant, lightweight and the rose-gold band goes with everything. I get compliments constantly.',
+    name: 'Sophia R.',
   },
   {
-    title: 'Love the Sound of Headphones',
-    text: 'Deep bass, crisp highs and the most comfortable cushions I have ever worn. Worth every cent.',
-    name: 'Lena Stevens',
+    title: 'Better than expected',
+    text: 'The build quality feels far more expensive than the price. Shipping was fast and the gift packaging was gorgeous.',
+    name: 'Amelia K.',
   },
   {
-    title: 'Great Noise Cancellation',
-    text: 'I can finally focus in a busy office. One tap for quick attention is a game changer for meetings.',
-    name: 'John Doe',
+    title: 'Love the swappable bands',
+    text: 'Changed from the steel band to silicone for the gym in seconds. So versatile and comfortable.',
+    name: 'Hannah L.',
   },
   {
-    title: 'Perfect and Light Design',
-    text: 'So light I forget I am wearing them. The touch controls are intuitive and the app is excellent.',
-    name: 'Penny Smith',
+    title: 'Perfect gift',
+    text: 'Bought the smartwatch for my mum and she adores it. Easy to set up and beautiful on the wrist.',
+    name: 'Grace M.',
   },
 ];
 
@@ -35,18 +35,18 @@ export default function Reviews() {
     <div className="simple-page">
       <div className="simple-page-inner">
         <span className="simple-eyebrow">Customer Reviews</span>
-        <h1>What They Say</h1>
+        <h1>What Women Are Saying</h1>
         <p>
-          Over 2,000 verified customers rate Sound Pro an average of 4.9 out of
-          5 stars. Here is a selection of what people are saying.
+          Over 10,000 women rate Aurelle an average of 4.9 out of 5 stars.
+          Here is a selection of what our customers are saying.
         </p>
 
         {REVIEWS.map((r) => (
           <div className="simple-card" key={r.title}>
-            <b style={{color: '#f4b740', letterSpacing: '2px'}}>★★★★★</b>
+            <b style={{color: '#c9a24b', letterSpacing: '2px'}}>★★★★★</b>
             <h2 style={{marginTop: '0.4rem'}}>{r.title}</h2>
             <p>{r.text}</p>
-            <p style={{margin: 0, fontWeight: 700, color: '#14110f'}}>
+            <p style={{margin: 0, fontWeight: 700, color: '#2b2622'}}>
               — {r.name}, Verified Buyer
             </p>
           </div>

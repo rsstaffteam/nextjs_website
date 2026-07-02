@@ -2,8 +2,8 @@ import type {Route} from './+types/contact';
 
 export const meta: Route.MetaFunction = () => {
   return [
-    {title: 'Contact | Sound Pro'},
-    {name: 'description', content: 'Get in touch with the Sound Pro team.'},
+    {title: 'Contact | Aurelle'},
+    {name: 'description', content: 'Get in touch with the Aurelle team.'},
   ];
 };
 
@@ -23,7 +23,7 @@ export default function Contact() {
         <div className="simple-contact-grid">
           <div className="simple-card">
             <b>Email</b>
-            support@soundpro.example
+            hello@aurelle.example
           </div>
           <div className="simple-card">
             <b>Phone</b>

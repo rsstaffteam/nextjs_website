@@ -2,8 +2,8 @@ import type {Route} from './+types/about';
 
 export const meta: Route.MetaFunction = () => {
   return [
-    {title: 'About | Sound Pro'},
-    {name: 'description', content: 'Learn about Sound Pro headphones.'},
+    {title: 'About | Aurelle'},
+    {name: 'description', content: 'The story behind Aurelle watches.'},
   ];
 };
 
@@ -12,36 +12,38 @@ export default function About() {
     <div className="simple-page">
       <div className="simple-page-inner">
         <span className="simple-eyebrow">About Us</span>
-        <h1>About Sound Pro</h1>
+        <h1>About Aurelle</h1>
 
         <p>
-          Sound Pro builds premium wireless headphones for people who take their
-          audio seriously. From the studio to the street, our mission is simple:
-          deliver rich, honest sound with all-day comfort and battery life you
-          never have to think about.
+          Aurelle was founded on a simple belief: a beautiful watch is more than
+          a way to tell time — it&apos;s a signature. We curate elegant
+          timepieces, smartwatches and interchangeable bands designed for the
+          modern woman who values craftsmanship as much as style.
         </p>
 
         <h2>Our Story</h2>
         <p>
-          What started as a small team of audio engineers and music lovers has
-          grown into a brand trusted by thousands of listeners worldwide. Every
-          pair of Sound Pro headphones is tuned by ear and tested in the real
-          world before it ever reaches you.
+          What began as a small studio sourcing refined watch bands has grown
+          into a destination for women&apos;s watches loved by thousands
+          worldwide. Every piece in our collection is chosen by hand and held to
+          the same standard: it has to be something we&apos;d wear ourselves,
+          every single day.
         </p>
 
         <h2>What We Stand For</h2>
         <p>
-          We believe great sound should be effortless. That means adaptive noise
-          cancelling that just works, fingertip controls that feel natural, and
-          a design that disappears the moment you put it on.
+          Effortless elegance, honest quality and versatility. From
+          surgical-grade stainless steel cases to bands you can swap in seconds,
+          Aurelle is made to move from the office to the evening without missing
+          a beat.
         </p>
 
         <div className="simple-card">
-          <h2 style={{marginTop: 0}}>Why Choose Us</h2>
+          <h2 style={{marginTop: 0}}>Why Choose Aurelle</h2>
           <ul>
-            <li>Up to 30 hours of battery on a single charge</li>
-            <li>HD active noise cancelling processor</li>
-            <li>Memory-foam cushions for total comfort</li>
+            <li>Hand-finished cases with mineral-crystal glass</li>
+            <li>Interchangeable bands for endless styling</li>
+            <li>Water-resistant everyday and smart designs</li>
             <li>Free worldwide shipping and a 2-year warranty</li>
           </ul>
         </div>
