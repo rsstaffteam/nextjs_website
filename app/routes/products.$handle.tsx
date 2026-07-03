@@ -111,7 +111,6 @@ export default function Product() {
   });
 
   const {title, descriptionHtml} = product;
-
   return (
     <div className="product">
       <ProductImage image={selectedVariant?.image} />
@@ -136,13 +135,19 @@ export default function Product() {
           dangerouslySetInnerHTML={{__html: descriptionHtml}}
         />
         {productQuestions.length > 0 ? (
-          <section className="product-questions" aria-labelledby="product-questions-title">
+          <section
+            className="product-questions"
+            aria-labelledby="product-questions-title"
+          >
             <h2 id="product-questions-title" className="product-section-title">
               Questions &amp; Answers
             </h2>
             <div className="product-questions-list">
               {productQuestions.map(({question, answer}, index) => (
-                <details className="product-question" key={`${question}-${index}`}>
+                <details
+                  className="product-question"
+                  key={`${question}-${index}`}
+                >
                   <summary>{question}</summary>
                   <p>{answer}</p>
                 </details>

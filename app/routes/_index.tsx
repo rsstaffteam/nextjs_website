@@ -12,6 +12,7 @@ import {
   IconShield,
   IconSparkle,
 } from '~/components/LandingIcons';
+import GridMotion from '~/components/GridMotion';
 
 export const meta: Route.MetaFunction = () => {
   return [
@@ -158,25 +159,40 @@ function Hero() {
         </div>
 
         <div className="lp-hero-visual" aria-hidden="true">
-          <div className="lp-hero-orb" />
-          <div className="lp-hero-ring" />
-          <div className="lp-hero-dial">
-            <span className="lp-hero-hand hour" />
-            <span className="lp-hero-hand minute" />
-            <span className="lp-hero-pin" />
-            {Array.from({length: 12}).map((_, i) => (
-              <span
-                key={i}
-                className="lp-hero-tick"
-                style={{transform: `rotate(${i * 30}deg) translateY(-118px)`}}
-              />
-            ))}
+          <div className="lp-hero-motion">
+            <GridMotion
+              items={heroMotionItems}
+              gradientColor="rgba(201, 138, 122, 0.34)"
+            />
           </div>
         </div>
       </div>
     </section>
   );
 }
+
+const heroMotionItems = Array.from({length: 28}, (_, index) => {
+  const items = [
+    'Rose gold finish',
+    'Elegant daily wear',
+    'Interchangeable bands',
+    'Gift ready',
+    'Water resistant',
+    'Smartwatch edit',
+    'Classic dials',
+    'Free shipping',
+    '30 day returns',
+    '2 year warranty',
+    'Modern silhouettes',
+    'Curated for women',
+  ];
+
+  return (
+    <span className="grid-motion__chip">
+      <strong>{items[index % items.length]}</strong>
+    </span>
+  );
+});
 
 /* --------------------------------- Marquee -------------------------------- */
 function Marquee() {
