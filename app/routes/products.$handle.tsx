@@ -91,7 +91,7 @@ function loadDeferredData({context, params}: Route.LoaderArgs) {
 export default function Product() {
   const {product} = useLoaderData<typeof loader>();
   const productQuestions = parseProductQuestions(
-    product.productQuestions?.value,
+    product.faqs?.value ?? product.productQuestions?.value,
   );
 
   // Optimistically selects a variant with given available variant information
@@ -175,13 +175,18 @@ function parseProductQuestions(value?: string | null): ProductQuestion[] {
   if (!value) return [];
 
   try {
-    const parsed = JSON.parse(value);
+    const parsed = JSON.parse(value) as unknown;
+    const questions = Array.isArray(parsed)
+      ? parsed
+      : isRecord(parsed) && Array.isArray(parsed.faqs)
+        ? parsed.faqs
+        : [];
 
-    if (!Array.isArray(parsed)) return [];
+    if (!Array.isArray(questions)) return [];
 
-    return parsed
+    return questions
       .map((item) => {
-        if (!item || typeof item !== 'object') return null;
+        if (!isRecord(item)) return null;
 
         const question =
           typeof item.question === 'string' ? item.question.trim() : '';
@@ -193,6 +198,10 @@ function parseProductQuestions(value?: string | null): ProductQuestion[] {
   } catch {
     return [];
   }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object';
 }
 
 const PRODUCT_VARIANT_FRAGMENT = `#graphql
@@ -240,6 +249,9 @@ const PRODUCT_FRAGMENT = `#graphql
     handle
     descriptionHtml
     description
+    faqs: metafield(namespace: "custom", key: "faqs") {
+      value
+    }
     productQuestions: metafield(namespace: "custom", key: "product_questions") {
       value
     }
