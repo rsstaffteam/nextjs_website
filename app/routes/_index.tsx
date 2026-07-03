@@ -122,6 +122,12 @@ export default function Homepage() {
 function Hero() {
   return (
     <section className="lp-hero">
+      <div className="lp-hero-bg" aria-hidden="true">
+        <GridMotion
+          items={heroMotionItems}
+          gradientColor="rgba(201, 138, 122, 0.34)"
+        />
+      </div>
       <div className="lp-hero-inner">
         <div className="lp-hero-copy">
           <span className="lp-hero-badge">New Season · 2026</span>
@@ -157,13 +163,20 @@ function Hero() {
             </div>
           </div>
         </div>
-
-        <div className="lp-hero-visual" aria-hidden="true">
-          <div className="lp-hero-motion">
-            <GridMotion
-              items={heroMotionItems}
-              gradientColor="rgba(201, 138, 122, 0.34)"
-            />
+        <div className="lp-hero-clock" aria-hidden="true">
+          <div className="lp-hero-orb" />
+          <div className="lp-hero-ring" />
+          <div className="lp-hero-dial">
+            <span className="lp-hero-hand hour" />
+            <span className="lp-hero-hand minute" />
+            <span className="lp-hero-pin" />
+            {Array.from({length: 12}).map((_, i) => (
+              <span
+                key={i}
+                className="lp-hero-tick"
+                style={{transform: `rotate(${i * 30}deg) translateY(-118px)`}}
+              />
+            ))}
           </div>
         </div>
       </div>

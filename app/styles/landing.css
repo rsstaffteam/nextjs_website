@@ -39,7 +39,7 @@
 }
 
 .lp-wrap {
-  width: min(1200px, 92vw);
+  width: min(1200px, calc(100% - 2rem));
   margin-inline: auto;
 }
 
@@ -88,6 +88,8 @@
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
+  justify-content: center;
+  min-width: 0;
   box-shadow: 0 14px 30px -12px rgba(201, 138, 122, 0.7);
   transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s;
   will-change: transform;
@@ -135,6 +137,9 @@
 * --------------------------------------------------
 */
 .lp-hero {
+  position: relative;
+  isolation: isolate;
+  min-height: calc(100svh - var(--header-height, 72px));
   background:
     radial-gradient(90% 90% at 85% 15%, var(--lp-blush) 0%, transparent 55%),
     radial-gradient(80% 80% at 5% 90%, #f0e2d8 0%, transparent 50%),
@@ -142,15 +147,67 @@
   overflow: hidden;
 }
 
+.lp-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 8% 42%, rgba(201, 138, 122, 0.32) 0%, rgba(224, 168, 147, 0.18) 26%, transparent 52%),
+    linear-gradient(90deg, rgba(253, 250, 246, 0.78) 0%, rgba(253, 250, 246, 0.58) 40%, rgba(253, 250, 246, 0.16) 100%),
+    linear-gradient(180deg, rgba(253, 250, 246, 0.46) 0%, transparent 52%, rgba(243, 233, 224, 0.48) 100%);
+  pointer-events: none;
+}
+
+.lp-hero-bg {
+  position: absolute;
+  inset: -16% -10%;
+  z-index: -2;
+  opacity: 1;
+  pointer-events: none;
+}
+
+.lp-hero-bg .grid-motion__stage {
+  min-height: 100%;
+  background-color: transparent;
+}
+
+.lp-hero-bg .grid-motion__stage::after {
+  background:
+    radial-gradient(circle at 18% 48%, rgba(201, 138, 122, 0.18) 0%, transparent 38%),
+    radial-gradient(circle at 62% 40%, transparent 0%, rgba(253, 250, 246, 0.06) 34%, rgba(253, 250, 246, 0.5) 88%),
+    linear-gradient(90deg, rgba(253, 250, 246, 0.3), transparent 26%, transparent 80%, rgba(243, 233, 224, 0.56));
+}
+
+.lp-hero-bg .grid-motion__container {
+  width: clamp(1500px, 176vw, 2600px);
+  height: clamp(760px, 154vh, 1500px);
+}
+
+.lp-hero-bg .grid-motion__item-inner {
+  border-color: rgba(201, 138, 122, 0.36);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(247, 231, 223, 0.98)),
+    #fffaf7;
+  box-shadow: 0 18px 46px -28px rgba(43, 38, 34, 0.78);
+}
+
+.lp-hero-bg .grid-motion__chip {
+  min-height: 2.8rem;
+  background: rgba(255, 255, 255, 0.92);
+}
+
 .lp-hero-inner {
-  width: min(1200px, 92vw);
+  width: min(1200px, calc(100% - 2rem));
   margin-inline: auto;
-  min-height: 88vh;
+  min-height: calc(100svh - var(--header-height, 72px));
   display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.58fr);
   align-items: center;
-  gap: 2rem;
-  padding: 6rem 0 4rem;
+  gap: clamp(1.5rem, 4vw, 4.5rem);
+  padding: clamp(3rem, 8vh, 6rem) 0 clamp(2rem, 6vh, 4rem);
+  position: relative;
+  z-index: 1;
 }
 
 .lp-hero-badge {
@@ -166,9 +223,15 @@
   margin-bottom: 1.6rem;
 }
 
+.lp-hero-copy {
+  max-width: 680px;
+  position: relative;
+  z-index: 2;
+}
+
 .lp-hero h1 {
   font-family: var(--lp-serif);
-  font-size: clamp(2.8rem, 6vw, 4.8rem);
+  font-size: clamp(2.35rem, 6vw, 4.8rem);
   font-weight: 600;
   line-height: 1.02;
   margin: 0 0 1.2rem;
@@ -198,8 +261,9 @@
 
 .lp-hero-stats {
   display: flex;
-  gap: 2.6rem;
+  gap: clamp(1.2rem, 4vw, 2.6rem);
   margin-top: 3rem;
+  flex-wrap: wrap;
 }
 
 .lp-hero-stats b {
@@ -219,54 +283,24 @@
 }
 
 /* Decorative CSS watch dial */
+.lp-hero-clock,
 .lp-hero-visual {
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 520px;
+  min-height: clamp(280px, 42vw, 520px);
   overflow: hidden;
   border-radius: 0;
 }
 
-.lp-hero-motion {
-  position: absolute;
-  inset: 0;
-  min-height: 100%;
-  opacity: 0.96;
-  mask-image: linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
-}
-
-.lp-hero-motion .grid-motion__stage {
-  min-height: 100%;
-  background-color: transparent;
-}
-
-.lp-hero-motion .grid-motion__stage::after {
-  background:
-    radial-gradient(circle at 50% 45%, transparent 0%, rgba(253, 250, 246, 0.2) 38%, rgba(253, 250, 246, 0.85) 76%),
-    linear-gradient(90deg, rgba(253, 250, 246, 0.88), transparent 28%, transparent 72%, rgba(243, 233, 224, 0.92));
-}
-
-.lp-hero-motion .grid-motion__container {
-  width: 166%;
-  height: 138%;
-}
-
-.lp-hero-motion .grid-motion__item-inner {
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(247, 231, 223, 0.9)),
-    #fffaf7;
-}
-
-.lp-hero-motion .grid-motion__chip {
-  min-height: 2.8rem;
-  background: rgba(255, 255, 255, 0.82);
+.lp-hero-clock {
+  overflow: visible;
 }
 
 .lp-hero-orb {
   position: absolute;
-  width: 400px;
-  height: 400px;
+  width: clamp(240px, 32vw, 400px);
+  height: clamp(240px, 32vw, 400px);
   border-radius: 50%;
   background: radial-gradient(circle at 40% 35%, #fff 0%, var(--lp-blush) 45%, #e7cbbd 100%);
   box-shadow: 0 40px 80px -30px rgba(201, 138, 122, 0.55);
@@ -275,8 +309,8 @@
 
 .lp-hero-ring {
   position: absolute;
-  width: 470px;
-  height: 470px;
+  width: clamp(290px, 38vw, 470px);
+  height: clamp(290px, 38vw, 470px);
   max-width: 90vw;
   max-height: 90vw;
   border-radius: 50%;
@@ -286,8 +320,8 @@
 
 .lp-hero-dial {
   position: relative;
-  width: 300px;
-  height: 300px;
+  width: clamp(220px, 24vw, 300px);
+  height: clamp(220px, 24vw, 300px);
   max-width: 74vw;
   max-height: 74vw;
   border-radius: 50%;
@@ -393,7 +427,7 @@
 * --------------------------------------------------
 */
 .lp-section {
-  padding: 6rem 0;
+  padding: clamp(4rem, 9vw, 6rem) 0;
 }
 
 .lp-section-soft {
@@ -464,8 +498,8 @@
 /* Products */
 .lp-products {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.6rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
+  gap: clamp(1rem, 2vw, 1.6rem);
 }
 
 .lp-product {
@@ -573,8 +607,8 @@
 /* Editorial */
 .lp-editorial {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 3rem;
+  grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
+  gap: clamp(2rem, 5vw, 3rem);
   align-items: center;
 }
 
@@ -627,8 +661,8 @@
 /* Reviews */
 .lp-reviews {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.6rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: clamp(1rem, 2vw, 1.6rem);
 }
 
 .lp-review {
@@ -677,7 +711,7 @@
 /* Perks */
 .lp-perks {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
   gap: 1.4rem;
   border-top: 1px solid var(--lp-line);
   border-bottom: 1px solid var(--lp-line);
@@ -750,23 +784,102 @@
 * --------------------------------------------------
 */
 @media (max-width: 960px) {
-  .lp-hero-inner { grid-template-columns: 1fr; text-align: center; padding-top: 5rem; }
+  .lp-hero-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+    min-height: auto;
+    padding-top: clamp(2.5rem, 7vh, 5rem);
+  }
   .lp-hero-cta, .lp-hero-stats { justify-content: center; }
   .lp-hero p { margin-inline: auto; }
-  .lp-hero-visual { order: -1; min-height: 320px; width: min(720px, 100%); margin-inline: auto; }
+  .lp-hero-clock { order: -1; min-height: clamp(260px, 44vw, 340px); }
   .lp-collections { grid-template-columns: repeat(2, 1fr); }
-  .lp-products { grid-template-columns: repeat(2, 1fr); }
   .lp-editorial { grid-template-columns: 1fr; gap: 2rem; }
-  .lp-reviews { grid-template-columns: 1fr; }
-  .lp-perks { grid-template-columns: repeat(2, 1fr); gap: 1.6rem; }
+  .lp-editorial-art { min-height: 260px; }
+  .lp-perks { gap: 1.6rem; }
 }
 
 @media (max-width: 560px) {
+  .lp-wrap,
+  .lp-hero-inner {
+    width: min(100% - 1.25rem, 1200px);
+  }
+
+  .lp-hero {
+    min-height: auto;
+  }
+
+  .lp-hero::after {
+    background:
+      radial-gradient(circle at 28% 24%, rgba(201, 138, 122, 0.28) 0%, rgba(224, 168, 147, 0.14) 28%, transparent 58%),
+      linear-gradient(180deg, rgba(253, 250, 246, 0.6) 0%, rgba(253, 250, 246, 0.78) 42%, rgba(243, 233, 224, 0.6) 100%);
+  }
+
   .lp-collections { grid-template-columns: 1fr; }
-  .lp-products { grid-template-columns: 1fr; }
-  .lp-perks { grid-template-columns: 1fr; }
-  .lp-section { padding: 4rem 0; }
-  .lp-hero-motion .grid-motion__container { width: 220%; }
+  .lp-hero-bg { inset: -8% -30%; }
+  .lp-hero-bg .grid-motion__container {
+    width: 980px;
+    height: 760px;
+  }
+  .lp-hero-clock { min-height: 250px; }
+  .lp-hero-badge {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+  }
+  .lp-hero h1 {
+    font-size: clamp(2.2rem, 14vw, 3.3rem);
+  }
+  .lp-hero p {
+    font-size: 0.96rem;
+  }
+  .lp-hero-cta {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .lp-btn {
+    width: 100%;
+    padding-inline: 1.1rem;
+  }
+  .lp-hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+  .lp-hero-stats b {
+    font-size: 1.25rem;
+  }
+  .lp-hero-stats small {
+    font-size: 0.58rem;
+    letter-spacing: 0.06em;
+  }
+  .lp-marquee {
+    padding: 0.7rem 0;
+  }
+  .lp-marquee-track {
+    gap: 1.6rem;
+  }
+  .lp-marquee-track span {
+    font-size: 0.68rem;
+    letter-spacing: 0.09em;
+  }
+  .lp-head {
+    margin-bottom: 2rem;
+  }
+  .lp-title {
+    font-size: clamp(1.8rem, 11vw, 2.5rem);
+  }
+  .lp-product,
+  .lp-review {
+    border-radius: 14px;
+  }
+  .lp-editorial-art {
+    min-height: 220px;
+  }
+  .lp-editorial-blob {
+    width: 250px;
+    height: 250px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
